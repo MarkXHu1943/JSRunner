@@ -4,7 +4,7 @@
 [🕶️ 在线体验 | Online](https://ziuchen.github.io/JSRunner/)
 [🚚 更新日志 | Changelog](https://ziuchen.github.io/project/JSRunner/log/)
 
-- ✅ Run JavaScript code to quickly verify code logic
+- ✅ Run JavaScript/TypeScript code to quickly verify code logic
 - ✅ Support switching NodeJS/browser operating environment
 - ✅ `Ctrl/Command+R` Quickly run code
 - ✅ `Ctrl/Command+Q` Clear the console

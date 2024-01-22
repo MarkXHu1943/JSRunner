@@ -45,18 +45,20 @@ export const useSettingStore = defineStore('setting', {
     init() {
       this.setTheme(this.theme)
       this.snippets = this.loadSnippets()
-
-      monaco.languages.registerCompletionItemProvider('javascript', {
-        // @ts-expect-error
-        provideCompletionItems: () => {
-          return {
-            suggestions: this.snippets.map((item) => ({
-              ...item,
-              kind: monaco.languages.CompletionItemKind.Snippet,
-              insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
-            }))
+      const langs = ['javascript', 'typescript']
+      langs.forEach((lang) => {
+        monaco.languages.registerCompletionItemProvider(lang, {
+          // @ts-expect-error
+          provideCompletionItems: () => {
+            return {
+              suggestions: this.snippets.map((item) => ({
+                ...item,
+                kind: monaco.languages.CompletionItemKind.Snippet,
+                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+              }))
+            }
           }
-        }
+        })
       })
     },
 

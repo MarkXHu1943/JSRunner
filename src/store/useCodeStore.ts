@@ -5,6 +5,7 @@ import {
   getItem,
   setItem,
   removeItem,
+  compileTypeScript,
   runCodeInSandbox,
   runCodeInBrowser,
   isElectron
@@ -34,6 +35,10 @@ export interface ICodeStoreState {
    */
   mode: 'ontime' | 'manual'
   /**
+   * code language
+   */
+  language: 'javascript' | 'typescript'
+  /**
    * code readonly
    */
   readonly: boolean
@@ -53,6 +58,7 @@ export const useCodeStore = defineStore('CodeSrore', {
       messages: [] as IMessage[],
       env: isElectron ? getItem('env') || 'node' : 'browser',
       mode: getItem('mode') || 'ontime',
+      language: getItem('language') || 'javascript',
       readonly: getItem('readonly') || false,
       execState: false
     } as ICodeStoreState),
@@ -60,7 +66,8 @@ export const useCodeStore = defineStore('CodeSrore', {
     codeWithId: (state) => `code/${state.id}`,
     currentEnv: (state) => (state.env === 'browser' ? '浏览器' : 'Node.js'),
     currentMode: (state) => (state.mode === 'ontime' ? '即时执行' : '手动触发'),
-    currentReadonly: (state) => (state.readonly ? '只读' : '可编辑')
+    currentReadonly: (state) => (state.readonly ? '只读' : '可编辑'),
+    currentLanguage: (state) => (state.language === 'javascript' ? 'JavaScript' : 'TypeScript')
   },
   actions: {
     init() {
@@ -121,15 +128,22 @@ export const useCodeStore = defineStore('CodeSrore', {
       this.readonly ? setItem('readonly', true) : removeItem('readonly')
     },
 
+    changeLanguage() {
+      this.language = this.language === 'javascript' ? 'typescript' : 'javascript'
+      this.language === 'typescript' ? setItem('language', 'typescript') : removeItem('language')
+    },
+
     readHistory(timeStamp: number) {
       this.loadCode(timeStamp)
       setItem('lastCodeId', this.id)
     },
 
-    execCode() {
-      if (!this.code) {
+    execCode(code?: string) {
+      if (!code || this.code) {
         return
       }
+
+      code = this.code
 
       const handleConsole = (stdout: any[], stderr: any[]) => {
         const id = uniqueId()
@@ -145,9 +159,26 @@ export const useCodeStore = defineStore('CodeSrore', {
         if (stderr) this.pushMessage({ id, timeStamp, type: 'error', content: stderr })
       }
 
+      if (this.language === 'typescript') {
+        try {
+          const res = compileTypeScript(code)
+          if (res) {
+            code = res
+          }
+        } catch (error: any) {
+          this.pushMessage({
+            id: uniqueId(),
+            timeStamp: new Date().getTime(),
+            type: 'error',
+            content: error?.message || JSON.stringify(error)
+          })
+          return
+        }
+      }
+
       this.env === 'browser'
-        ? runCodeInBrowser(this.code, handleConsole)
-        : runCodeInSandbox(this.code, handleConsole)
+        ? runCodeInBrowser(code, handleConsole)
+        : runCodeInSandbox(code, handleConsole)
 
       // side effect
       this.execState = true

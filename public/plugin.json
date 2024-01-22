@@ -1,6 +1,6 @@
 {
   "pluginName": "超级JavaScript",
-  "description": "JavaScript运行器 支持多种运行环境",
+  "description": "JavaScript/TypeScript运行器 支持多种运行环境 快速验证代码逻辑",
   "author": "ZiuChen",
   "homepage": "https://github.com/ZiuChen",
   "main": "index.html",

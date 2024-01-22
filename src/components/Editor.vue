@@ -135,6 +135,19 @@ onStartTyping(() => {
   editor?.focus()
 })
 
+watch(
+  () => props.language,
+  (language) => {
+    const model = editor?.getModel()
+    if (model) {
+      monaco.editor.setModelLanguage(model, language)
+    }
+  },
+  {
+    deep: true
+  }
+)
+
 /**
  * 初始化编辑器
  */

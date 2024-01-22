@@ -41,6 +41,7 @@ export default defineConfig({
     drop: process.env.NODE_ENV === 'production' ? ['console'] : []
   },
   server: {
+    host: '0.0.0.0',
     port: 8084
   },
   plugins: [

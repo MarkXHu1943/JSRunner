@@ -14,6 +14,9 @@
       <a-button class="width-80" @click="store.changeMode">
         {{ store.currentMode }}
       </a-button>
+      <a-button class="width-80" @click="store.changeLanguage">
+        {{ store.currentLanguage }}
+      </a-button>
       <a-button @click="handleEditorAction('listHistory')" style="flex: 1">
         代码历史回溯 ({{ history.historys.length }})
       </a-button>
@@ -23,7 +26,7 @@
         <Editor
           ref="editorRef"
           :code="store.code"
-          :language="'javascript'"
+          :language="store.language"
           :readonly="store.readonly"
           :debounce-interval="setting.codeChangeDebounce"
           :indent-type="setting.indentType"
