@@ -77,7 +77,6 @@ export const useSettingStore = defineStore('setting', {
 
     loadSnippets() {
       const snippets = allDocs('setting/snippet')
-      console.log('snippets', snippets)
       if (!snippets.length)
         return [
           {

@@ -9,8 +9,11 @@
       ></a-button>
       <a-button @click="$router.push('/setting')"><icon-settings /></a-button>
       <a-button @click="$router.push('/about')"><icon-info-circle /></a-button>
+      <a-button v-if="isElectron" @click="callFeatureDrawer"><icon-send /></a-button>
       <a-button @click="handleDeleteClick"><icon-delete /></a-button>
-      <a-button class="width-80" @click="store.changeEnv">{{ store.currentEnv }}</a-button>
+      <a-button v-if="isElectron" class="width-80" @click="store.changeEnv">{{
+        store.currentEnv
+      }}</a-button>
       <a-button class="width-80" @click="store.changeMode">
         {{ store.currentMode }}
       </a-button>
@@ -44,27 +47,34 @@
         </a-dropdown>
       </template>
     </a-split>
+    <feature-drawer v-model:visible="drawerVisible"></feature-drawer>
   </div>
 </template>
 
 <script setup lang="ts">
+import { Modal } from '@arco-design/web-vue'
+import { IconSend } from '@arco-design/web-vue/es/icon'
 import { useCodeStore, useSettingStore } from '@/store'
-import { setItem, getItem } from '@/utils'
+import { setItem, getItem, isElectron } from '@/utils'
 import Editor, { EditorAction } from '@/components/Editor.vue'
 import Console from '@/components/Console.vue'
+import FeatureDrawer from '@/components/FeatureDrawer.vue'
 import { useHistoryStore } from '@/store/useHistoryStore'
-import { Modal } from '@arco-design/web-vue'
 
 const editorRef = ref<InstanceType<typeof Editor> | null>(null)
 const size = ref(getItem('size') || 0.75)
 const store = useCodeStore()
 const setting = useSettingStore()
 const history = useHistoryStore()
+const drawerVisible = ref(false)
 
 store.init()
 
 watch(size, (val) => setItem('size', val))
 
+/**
+ * 删除当前代码
+ */
 function handleDeleteClick() {
   Modal.confirm({
     title: '确认删除',
@@ -75,6 +85,9 @@ function handleDeleteClick() {
   })
 }
 
+/**
+ * 处理编辑器的操作
+ */
 function handleEditorAction(action: EditorAction) {
   switch (action) {
     case 'runCode':
@@ -120,6 +133,13 @@ function handleEditorAction(action: EditorAction) {
       exhaustiveCheck
       break
   }
+}
+
+/**
+ * 打开功能面板
+ */
+function callFeatureDrawer() {
+  drawerVisible.value = true
 }
 </script>
 

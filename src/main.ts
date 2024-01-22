@@ -14,9 +14,8 @@ try {
     .use(createPinia())
     .use(registerDirectives)
     .use(registerIcon)
+    .use(registerCallback)
     .mount('#app')
-
-  registerCallback()
 } catch (error) {
   console.error(error)
   if (isElectron) utools.showNotification('初始化失败: ' + error)
