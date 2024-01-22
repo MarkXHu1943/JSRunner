@@ -139,11 +139,11 @@ export const useCodeStore = defineStore('CodeSrore', {
     },
 
     execCode(code?: string) {
-      if (!code || this.code) {
+      code = this.code
+
+      if (!code) {
         return
       }
-
-      code = this.code
 
       const handleConsole = (stdout: any[], stderr: any[]) => {
         const id = uniqueId()
