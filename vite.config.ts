@@ -7,9 +7,10 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { ArcoResolver } from 'unplugin-vue-components/resolvers'
 import { createStyleImportPlugin } from 'vite-plugin-style-import'
+import { visualizer } from 'rollup-plugin-visualizer'
 import postBuildPlugin from './build/postBuildPlugin'
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   base: './',
   resolve: {
     alias: {
@@ -31,6 +32,7 @@ export default defineConfig({
       output: {
         manualChunks: (e) => {
           if (e.includes('/node_modules/monaco-editor/')) return 'monaco'
+          if (e.includes('@babel/standalone')) return 'babel'
           return 'vendor'
         }
       },
@@ -77,6 +79,7 @@ export default defineConfig({
     }),
     postBuildPlugin({
       files: ['index.html', 'plugin.json', 'preload.js']
-    })
+    }),
+    mode === 'preview' && visualizer()
   ]
-})
+}))
